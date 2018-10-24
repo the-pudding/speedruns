@@ -38,10 +38,13 @@ d3.selection.prototype.plateauChart = function init(options) {
 		let $circles = null;
 		let maxX = null;
 		let minX = null;
+		let extentX = null;
 		let maxY = null;
 
 		// dealing with dates & times
 		let parseDate = d3.timeParse('%Y-%m-%d')
+		let parseGroupDate = d3.timeParse('%Y-%m')
+		let formatGroupDate = d3.timeFormat('%Y-%m')
 
 		//data
 		let cleanedData = null;
@@ -55,7 +58,7 @@ d3.selection.prototype.plateauChart = function init(options) {
 
 			yScale = d3
 				.scaleLinear()
-				.domain([0, 2000])
+				.domain([240, 600])
 				.range([height, 0]);
 
 			xAxis = d3
@@ -76,11 +79,11 @@ d3.selection.prototype.plateauChart = function init(options) {
 			const minutes = Math.floor(time/60)
 			const seconds = time - minutes * 60
 
-			function timeFormat(string,pad,length) {
+			function convertTime(string,pad,length) {
 		    return (new Array(length+1).join(pad)+string).slice(-length);
 			}
 
-			const finalTime = timeFormat(minutes,'0',2)+':'+timeFormat(seconds,'0',2);
+			const finalTime = convertTime(minutes,'0',2)+':'+convertTime(seconds,'0',2);
 			return finalTime
 		}
 
@@ -88,17 +91,19 @@ d3.selection.prototype.plateauChart = function init(options) {
 			cleanedData = data[0]
 			cleanedData.forEach(function(d) {
 				d.date = parseDate(d.date);
+				d.groupDate = parseGroupDate(formatGroupDate(d.date))
 				d.timeClock = convertSeconds(d.time)
 			})
 
 			cleanedData = cleanedData.filter(function(d) {
 				return d.category_name === "Any%" &&
 				d.emulated !== "true" &&
-				d.status === "verified"
+				d.status === "verified" &&
+				d.date !== null
 			})
 
-			maxX = d3.max(cleanedData, function(d) { return d.date})
-			minX = d3.min(cleanedData, function(d) { return d.date})
+			maxX = d3.max(cleanedData, function(d) { return d.groupDate})
+			minX = d3.min(cleanedData, function(d) { return d.groupDate})
 			maxY = d3.max(cleanedData, function(d) { return d.time})
 
 			cleanedData = d3.nest()
@@ -133,7 +138,10 @@ d3.selection.prototype.plateauChart = function init(options) {
 				$vis = $g.append('g.g-vis');
 
 				circleGroup = $vis.selectAll('.g-vis')
-					.data(cleanedData)
+					//all games
+					//.data(cleanedData)
+					//Mario only
+					.data(cleanedData.filter(function(d) { return d.key === 'Super Mario Bros.'}))
 					.enter()
 					.append('g')
 
@@ -162,7 +170,7 @@ d3.selection.prototype.plateauChart = function init(options) {
 				updateScales()
 
 				$vis.selectAll('.run-circle')
-					.attr('cx', function(d){return xScale(d.date);})
+					.attr('cx', function(d){return xScale(d.groupDate);})
 					.attr('cy', function(d){return yScale(d.time);})
 
 				$axis.select('.x')
