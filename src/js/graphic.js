@@ -3,6 +3,7 @@ import './pudding-chart/plateau-template'
 
 // data
 let data = null
+let chart = null
 
 function resize() {}
 
@@ -15,12 +16,15 @@ function loadData(){
     })
   })
 }
+function setupChart() {
+	chart = d3.select('#plateau-chart').datum(data).plateauChart();
+}
 
 function init() {
   return new Promise((resolve) => {
     loadData()
       .then(response => {
-        //console.log(data)
+        setupChart(response[0]);
       })
   })
 }
