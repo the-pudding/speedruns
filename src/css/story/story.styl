@@ -8,9 +8,10 @@
 		flex 0 0 auto
 		width 100%
 		height 100vh
+		position relative
 
 		.ground
-			position fixed
+			position absolute
 			left 0
 			bottom 0
 			width 100%
@@ -27,11 +28,43 @@
 	.world2
 		background-color $off-black
 
-		.ground1
+		.ground2
 			background-image url('assets/images/GroundBlock_W2.png')
 
 	.world3
 		background-color $off-black
 
-		.ground1
-			background-image url('assets/images/GroundBlock_3.png')
+		.mario-elements
+
+			.ground3
+				background-image url('assets/images/GroundBlock_W3.png')
+
+			.start-pipe
+				background-image url('assets/images/Pipe.png')
+				position fixed
+				left 32px
+				bottom 32px
+				width 64px
+				height 64px
+
+		.text-container
+			padding 4rem 32px 0 32px
+			height 100vh
+			position absolute
+			width 100%
+
+			.world-num
+
+				p
+					color $white
+					font-family $pixel
+					margin 0
+					padding 0
+					set-type-size(small)
+
+		.chart-container
+			margin 4rem 32px 0 32px
+			height calc(100vh - 4rem - 32px)
+			position absolute
+			width calc(100% - 64px)
+			border 1px solid pink
